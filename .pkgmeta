@@ -1,0 +1,10 @@
+package-as: BagViewerLog
+
+move-folders:
+
+ignore:
+  - .github
+  - .gitignore
+  - .gitattributes
+  - README
+  - README.md
