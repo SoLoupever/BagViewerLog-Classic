@@ -1,0 +1,96 @@
+## Interface: 11508, 11509, 16001, 20505, 20506, 30405, 38002, 40402, 50503, 50504
+## Title: BagViewerLog
+## Notes: Modern bag replacement in the ViewerLog style (Classic)
+## Notes-frFR: Sac moderne au style ViewerLog (Classic)
+## Author: SoLoup_ever
+## Version: 0.1.0
+## RequiredDeps: ViewerLog, ViewerLog_Items
+## SavedVariables: BagViewerLogDB
+## IconTexture: Interface\AddOns\BagViewerLog\BVL_Logo.blp
+
+
+## ── NOYAU ─────────────────────────────────────────────────────────
+core\Init.lua
+core\Env.lua
+core\Settings.lua
+
+## ── LOCALISATION ─────────────────────────────────────────────────
+locales\Locales_frFR.lua
+locales\Locales_enUS.lua
+
+## ── CATÉGORIES ────────────────────────────────────────────────────
+categories\Registry.lua
+categories\Base.lua
+
+## ── DONNÉES ───────────────────────────────────────────────────────
+data\Inventory.lua
+data\Bank.lua
+data\GuildBank.lua
+data\History.lua
+
+## ── MODULES ───────────────────────────────────────────────────────
+modules\Search.lua
+modules\Recent.lua
+modules\Stack.lua
+modules\Cursor.lua
+modules\Assign.lua
+modules\ItemLevel.lua
+modules\Vendor.lua
+modules\Hearthstone.lua
+modules\EquipSets.lua
+modules\Custom.lua
+modules\Order.lua
+modules\Compact.lua
+modules\View.lua
+modules\views\Category.lua
+modules\views\OneBag.lua
+modules\views\MultiBag.lua
+modules\bank\Character.lua
+modules\history\Bags.lua
+modules\history\Bank.lua
+
+## ── UI ────────────────────────────────────────────────────────────
+ui\Theme.lua
+ui\Metrics.lua
+ui\metrics\Standard.lua
+ui\metrics\Compact.lua
+ui\Skin.lua
+ui\Registry.lua
+ui\options\Registry.lua
+ui\options\Compact.lua
+ui\Badges.lua
+ui\badges\ItemLevel.lua
+ui\ItemButtons.lua
+ui\buttons\Guild.lua
+ui\buttons\History.lua
+ui\Sections.lua
+ui\PlusSlots.lua
+ui\CategoryGrid.lua
+ui\widgets\SearchBox.lua
+ui\widgets\SortButton.lua
+ui\widgets\MenuButton.lua
+ui\widgets\BagsButton.lua
+ui\widgets\OptionsButton.lua
+ui\widgets\ViewList.lua
+ui\widgets\CloseButton.lua
+ui\widgets\Money.lua
+ui\widgets\CharButton.lua
+ui\widgets\HistoryButton.lua
+ui\Frame.lua
+ui\BankFrame.lua
+ui\guild\TabBar.lua
+ui\guild\Footer.lua
+ui\guild\Return.lua
+ui\GuildFrame.lua
+ui\history\CharMenu.lua
+ui\HistoryFrame.lua
+ui\menu\CategoryList.lua
+ui\menu\ItemList.lua
+ui\CategoryMenu.lua
+ui\OptionsMenu.lua
+ui\BagBar.lua
+
+## ── REMPLACEMENT DU SAC BLIZZARD (en dernier) ─────────────────────
+core\Replace.lua
+core\ReplaceBank.lua
+core\ReplaceGuild.lua
