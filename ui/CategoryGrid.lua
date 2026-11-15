@@ -10,7 +10,7 @@ local addonName, ns = ...
 -- Clic droit : publie CATEGORY_CONTEXT(def, entrées) et, au survol,
 -- CATEGORY_CONTEXT_TIP(infobulle, def). Pas pour une catégorie repliée, noBulk,
 -- ni une vue qui refuse "bulk" ; les sous-catégories noBulk sont exclues.
--- Dimensions : profil ns.UI.GetMetrics, changé par G.SetMetrics(m). Sans appel,
+-- Dimensions : profil ns.UI.GetMetrics, changé par G.SetMetrics(m, cols). Sans appel,
 -- profil standard avec cfg.cols colonnes.
 -- G.Render renvoie la hauteur et la largeur utilisées (le cadre s'y adapte).
 -- Emplacements libres : un seul bloc en bas, une icône par type de sac.
@@ -56,8 +56,8 @@ function ns.UI.NewCategoryGrid(cfg)
         if Plus then Plus.SetSize(SLOT) end
     end
 
-    function G.SetMetrics(m)
-        Apply(m)
+    function G.SetMetrics(m, cols)
+        Apply(m, cols)
     end
 
     local function Toggle(key)

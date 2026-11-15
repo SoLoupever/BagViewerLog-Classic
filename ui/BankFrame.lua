@@ -3,22 +3,25 @@ local addonName, ns = ...
 -- Cadre de banque : types et onglets viennent de
 -- ns.Bank, les emplacements sont de vrais boutons (dépôt / retrait natifs).
 -- Tous les onglets du type actif sont fusionnés en une seule vue par catégories ;
--- la hauteur suit le contenu.
+-- en mode compact : emplacements réduits et barre d'onglets (un onglet = ses
+-- emplacements). La hauteur suit le contenu.
 
 local C  = ns.UI.Colors
 local IB = ns.UI.NewItemButtons()
 
-local COLS, SLOT, GAP, PAD = 20, 37, 4, 12
+local COLS_STD, COLS_COMPACT = 20, 16
 local SCROLLBAR_W = 24
 local TOP_CHROME, BOTTOM_CHROME = 80, 52
+local TAB_ROW_H = 30   -- barre d'onglets (mode compact)
 
-local CONTENT_W = COLS * SLOT + (COLS - 1) * GAP
-local FRAME_W   = PAD * 2 + CONTENT_W + SCROLLBAR_W
+local COLS, PAD, CONTENT_W, FRAME_W
 
-local frame, content, emptyText, Grid
+local frame, content, emptyText, Grid, scroll, tabBar, close, bottomBtn
 local typeBtns = {}
 local curType, keepInteraction
-local EMPTY_SNAP = { groups = {}, free = {}, numTabs = 0 }
+local topChrome = TOP_CHROME
+local EMPTY_SNAP = { groups = {}, free = {}, slots = {}, numTabs = 0 }
+local OPTS = { showCustom = false }
 
 local Refresh
 
@@ -43,15 +46,65 @@ local function GetTypeButton(i)
 end
 
 -- ── Grille ────────────────────────────────────────────────────────
+-- Profil de dimensions du mode courant (ui/metrics/) : colonnes, marges, largeur.
+local function ApplyMetrics()
+    local compact = ns.Compact.IsEnabled()
+    local m = ns.UI.GetMetrics(compact and "compact" or "standard")
+    COLS = compact and COLS_COMPACT or COLS_STD
+    PAD = m.pad
+    CONTENT_W = COLS * m.slot + (COLS - 1) * m.gap
+    FRAME_W = PAD * 2 + CONTENT_W + SCROLLBAR_W
+    return m, compact
+end
+
+local function AnchorScroll()
+    scroll:ClearAllPoints()
+    scroll:SetPoint("TOPLEFT",     frame, "TOPLEFT",     PAD, -topChrome)
+    scroll:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -(PAD + SCROLLBAR_W), BOTTOM_CHROME)
+end
+
+local function SetTopChrome(h)
+    if h == topChrome then return end
+    topChrome = h
+    AnchorScroll()
+end
+
+-- Applique les dimensions : cadre, ancrages, barre d'onglets et grille.
+local function ApplyLayout()
+    local m, compact = ApplyMetrics()
+    frame:SetWidth(FRAME_W)
+    content:SetWidth(CONTENT_W)
+    close:ClearAllPoints()
+    close:SetPoint("TOPRIGHT", frame, "TOPRIGHT", -PAD, -10)
+    bottomBtn:ClearAllPoints()
+    bottomBtn:SetPoint("BOTTOMLEFT", frame, "BOTTOMLEFT", PAD, PAD)
+    AnchorScroll()
+    tabBar.SetWidth(compact and 60 or 84, 4)
+    Grid.SetMetrics(m, COLS)
+end
+
 local function Layout()
     local def = curType and ns.Bank.GetType(curType)
     local snap = def and ns.Bank.Get(curType) or EMPTY_SNAP
 
-    local contentH = Grid.Render(snap, { holding = ns.Cursor.GetItemID() ~= nil, showCustom = false })
+    -- Mode compact : barre d'onglets, un onglet choisi = vue par emplacements.
+    local tabs = ns.Compact.IsEnabled() and snap.numTabs > 0 and ns.Bank.GetTabs(curType)
+    OPTS.view = nil
+    if tabs then
+        local index, tab = ns.BankTabs.Resolve(tabs)
+        tabBar.Update(tabs, index)
+        if tab then OPTS.view = ns.BankTabs.GetView(tab) end
+    else
+        tabBar.Hide()
+    end
+    SetTopChrome(tabs and TOP_CHROME + TAB_ROW_H or TOP_CHROME)
+
+    OPTS.holding = ns.Cursor.GetItemID() ~= nil
+    local contentH = Grid.Render(snap, OPTS)
     content:SetHeight(contentH)
     emptyText:SetShown(snap.numTabs == 0)
     -- La fenêtre suit le contenu, plafonnée à la hauteur de l'écran.
-    frame:SetHeight(math.min(contentH + TOP_CHROME + BOTTOM_CHROME, UIParent:GetHeight()))
+    frame:SetHeight(math.min(contentH + topChrome + BOTTOM_CHROME, UIParent:GetHeight()))
 end
 
 function SwitchType(id)
@@ -94,6 +147,7 @@ local function Build()
     frame:SetBackdropColor(C.bg[1], C.bg[2], C.bg[3], C.bg[4])
     frame:SetBackdropBorderColor(C.border[1], C.border[2], C.border[3], C.border[4])
     _G["BagViewerLogBankFrame"] = frame
+    ApplyMetrics()
     frame:SetSize(FRAME_W, TOP_CHROME + BOTTOM_CHROME)
     frame:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", 0, 0)
     frame:SetFrameStrata("DIALOG")   -- au-dessus du chat (HIGH)
@@ -106,12 +160,18 @@ local function Build()
     title:SetTextColor(C.accent[1], C.accent[2], C.accent[3], 1)
     title:SetText(ns.L("BANK_TITLE"))
 
-    local close = ns.UI.Button(frame, 26, 26, "X")
+    close = ns.UI.Button(frame, 26, 26, "X")
     close:SetPoint("TOPRIGHT", frame, "TOPRIGHT", -PAD, -10)
     close:SetScript("OnClick", function() frame:Hide() end)
 
+    tabBar = ns.UI.GuildTabBar.New(frame, function(index)
+        local tab = index and ns.Bank.GetTabs(curType)[index]
+        ns.BankTabs.Set(tab and tab.ID)
+    end, { y = -(TOP_CHROME - 6), allKey = "BANK_TAB_ALL", always = true })
+
     local blizz = ns.UI.Button(frame, 160, 26, ns.L("BANK_BLIZZARD"))
     blizz:SetPoint("BOTTOMLEFT", frame, "BOTTOMLEFT", PAD, PAD)
+    bottomBtn = blizz
     blizz:SetScript("OnClick", function() ns.Fire("BANK_BLIZZARD_REQUESTED") end)
     local hover = blizz:GetScript("OnEnter")
     blizz:SetScript("OnEnter", function(s)
@@ -126,7 +186,7 @@ local function Build()
         GameTooltip_Hide()
     end)
 
-    local scroll = CreateFrame("ScrollFrame", nil, frame, "UIPanelScrollFrameTemplate")
+    scroll = CreateFrame("ScrollFrame", nil, frame, "UIPanelScrollFrameTemplate")
     scroll:SetPoint("TOPLEFT",     frame, "TOPLEFT",     PAD, -TOP_CHROME)
     scroll:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -(PAD + SCROLLBAR_W), BOTTOM_CHROME)
 
@@ -138,6 +198,7 @@ local function Build()
         content = content, IB = IB, Sections = ns.UI.NewSections(),
         cols = COLS, prefix = "bank:", refresh = Refresh, usePlus = true,
     })
+    ApplyLayout()
 
     emptyText = frame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     emptyText:SetPoint("CENTER", frame, "CENTER", 0, 0)
@@ -161,6 +222,15 @@ local function Build()
 
     ns.On("BANK_CHANGED", function()
         if frame:IsShown() then Refresh() end
+    end)
+    ns.On("COMPACT_CHANGED", function()
+        ApplyLayout()
+        if frame:IsShown() then Refresh() end
+    end)
+    ns.On("BANK_TAB_CHANGED", function()
+        if not frame:IsShown() then return end
+        scroll:SetVerticalScroll(0)
+        Layout()
     end)
 
     -- Objet tenu au curseur ("+") et changements de classement : un seul

@@ -20,6 +20,14 @@ end
 
 local tabs = {}
 
+-- Nom affiché : banque principale, sinon nom du sac / de l'onglet.
+local function TabName(tab, index)
+    if tab.ID == BANK_CONTAINER then return ns.L("BANK_MAIN") end
+    local name = C_Container.GetBagName and C_Container.GetBagName(tab.ID)
+    if name and name ~= "" then return name end
+    return ns.L("BANK_TAB_FMT"):format(index)
+end
+
 ns.Bank.RegisterType({
     id = "character", labelKey = "BANK_CHARACTER", order = 1,
     getTabs = function()
@@ -28,6 +36,7 @@ ns.Bank.RegisterType({
             local tab = candidates[i]
             if (C_Container.GetContainerNumSlots(tab.ID) or 0) > 0 then
                 tabs[#tabs + 1] = tab
+                tab.name = TabName(tab, #tabs)
             end
         end
         return tabs

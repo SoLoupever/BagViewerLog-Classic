@@ -6,6 +6,9 @@ ns.locales["frFR"] = {
     BANK_TITLE         = "Banque",
     BANK_CHARACTER     = "Personnage",
     BANK_NO_TABS       = "Aucun emplacement disponible",
+    BANK_TAB_ALL       = "Tous",
+    BANK_MAIN          = "Banque",
+    BANK_TAB_FMT       = "Onglet %d",
     BANK_BLIZZARD      = "Cadre Blizzard",
     BANK_BLIZZARD_TIP  = "Achat et équipement des sacs de banque.",
 
@@ -60,7 +63,7 @@ ns.locales["frFR"] = {
 
     OPTIONS_TITLE      = "Options du sac",
     OPT_COMPACT        = "Sac compact",
-    OPT_COMPACT_DESC   = "Réduit les emplacements, les marges et la hauteur maximale du sac.",
+    OPT_COMPACT_DESC   = "Réduit les emplacements, les marges et la hauteur maximale du sac. Active aussi la vue par onglet en banque.",
 
     SEARCH_PLACEHOLDER = "Rechercher...",
     SORT_TIP_TITLE     = "Trier les sacs",

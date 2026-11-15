@@ -6,6 +6,9 @@ ns.locales["enUS"] = {
     BANK_TITLE         = "Bank",
     BANK_CHARACTER     = "Character",
     BANK_NO_TABS       = "No tab available",
+    BANK_TAB_ALL       = "All",
+    BANK_MAIN          = "Bank",
+    BANK_TAB_FMT       = "Tab %d",
     BANK_BLIZZARD      = "Blizzard frame",
     BANK_BLIZZARD_TIP  = "Buy and equip bank bag slots.",
 
@@ -60,7 +63,7 @@ ns.locales["enUS"] = {
 
     OPTIONS_TITLE      = "Bag options",
     OPT_COMPACT        = "Compact bag",
-    OPT_COMPACT_DESC   = "Shrinks slots, margins and the maximum bag height.",
+    OPT_COMPACT_DESC   = "Shrinks slots, margins and the maximum bag height. Also enables the tab view in banks.",
 
     SEARCH_PLACEHOLDER = "Search...",
     SORT_TIP_TITLE     = "Sort bags",
