@@ -42,7 +42,7 @@ ns.Bank.RegisterType({
         return tabs
     end,
     getData = function(tabID)
-        local bank = ns.vl.GetBank and ns.vl.GetBank(UnitName("player"), GetRealmName())
+        local bank = ns.vl.GetBank and ns.vl.GetBank(ns.GetPlayer())
         return bank and bank[tabID]
     end,
 })

@@ -81,7 +81,7 @@ function ns.DropSlots(bag)
 end
 
 local function GetBagData()
-    return ns.vl.GetBags and ns.vl.GetBags(UnitName("player"), GetRealmName())
+    return ns.vl.GetBags and ns.vl.GetBags(ns.GetPlayer())
 end
 
 local function Rebuild(force)

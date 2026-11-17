@@ -32,7 +32,8 @@ function ns.History.GetViews()
 end
 
 function ns.History.GetChar()
-    return char or UnitName("player"), realm or GetRealmName()
+    if char then return char, realm end
+    return ns.GetPlayer()
 end
 
 function ns.History.GetCharData()
